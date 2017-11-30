@@ -41,7 +41,6 @@ class supervisord::params {
       $executable_path   = '/usr/local/bin'
     }
     'Debian': {
-      $config_file       = '/etc/supervisord.conf'
       case $::operatingsystem {
         'Ubuntu': {
           if versioncmp($::operatingsystemmajrelease, '15.10') > 0 {
