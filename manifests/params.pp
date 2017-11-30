@@ -41,6 +41,7 @@ class supervisord::params {
       $executable_path   = '/usr/local/bin'
     }
     'Debian': {
+      $config_file       = '/etc/supervisord.conf'
       case $::operatingsystem {
         'Ubuntu': {
           if versioncmp($::operatingsystemmajrelease, '15.10') > 0 {
@@ -72,11 +73,30 @@ class supervisord::params {
       $install_init      = true
       $executable_path   = '/usr/local/bin'
     }
+    'FreeBSD': {
+      $init_type         = 'init'
+      $init_defaults     = false
+      $init_script       = '/usr/local/etc/rc.d/supervisord'
+      $unix_socket_group = 'nobody'
+      $install_init      = false
+      $executable_path   = '/usr/local/bin'
+      $package_provider  = 'pkgng'
+      $package_name      = 'sysutils/py-supervisor'
+      $config_include    = '/usr/local/etc/supervisor.d'
+      $config_file       = '/usr/local/etc/supervisord.conf'
+      $run_path          = '/var/run/supervisor'
+
+    }
     default:  {
+      $package_provider  = 'pip'
+      $package_name      = 'supervisor'
+      $config_include    = '/etc/supervisor.d'
+      $config_file       = '/etc/supervisord.conf'
       $init_defaults     = false
       $unix_socket_group = 'nogroup'
       $install_init      = false
       $executable_path   = '/usr/local/bin'
+      $run_path          = '/var/run'
     }
   }
 
@@ -91,21 +111,18 @@ class supervisord::params {
 
   # default supervisord params
   $package_ensure          = 'installed'
-  $package_provider        = 'pip'
   $package_install_options = undef
   $service_manage          = true
   $service_ensure          = 'running'
   $service_enable          = true
   $service_name            = 'supervisord'
   $service_restart         = undef
-  $package_name            = 'supervisor'
   $executable              = "${executable_path}/supervisord"
   $executable_ctl          = "${executable_path}/supervisorctl"
 
   $scl_enabled             = false
   $scl_script              = '/opt/rh/python27/enable'
 
-  $run_path                = '/var/run'
   $pid_file                = 'supervisord.pid'
   $log_path                = '/var/log/supervisor'
   $log_file                = 'supervisord.log'
@@ -117,8 +134,6 @@ class supervisord::params {
   $minprocs                = '200'
   $umask                   = '022'
   $manage_config           = true
-  $config_include          = '/etc/supervisor.d'
-  $config_file             = '/etc/supervisord.conf'
   $config_file_mode        = '0644'
   $setuptools_url          = 'https://bootstrap.pypa.io/ez_setup.py'
 
@@ -139,5 +154,5 @@ class supervisord::params {
   $inet_username           = undef
   $inet_password           = undef
   $user                    = 'root'
-  $group                   = 'root'
+  $group                   = 0
 }
